@@ -18,15 +18,28 @@ async function analyzeToken() {
             body: JSON.stringify({ token })
         });
 
+        if (!response.ok) throw new Error("Backend error");
+
         const data = await response.json();
 
         result.innerHTML = `
-            <h3>Risk Score: ${data.riskScore}</h3>
+            <h3>🔴 Risk Score: ${data.riskScore}</h3>
             <p><strong>Warnings:</strong> ${data.warnings?.join(", ") || "None"}</p>
             <pre>${JSON.stringify(data.payload, null, 2)}</pre>
         `;
 
     } catch (error) {
-        result.innerHTML = "Error connecting to backend.";
+
+        // 🔥 SIMULATION MODE (Fallback)
+        result.innerHTML = `
+            <h3>⚠ Backend Not Available</h3>
+            <p>Showing Simulation Data</p>
+            <h3>🔴 Risk Score: 75 (Simulated)</h3>
+            <p><strong>Warnings:</strong> Weak Secret Key, Long Expiry, No Signature Verification</p>
+            <pre>{
+  "simulated": true,
+  "message": "This is demo fallback data"
+}</pre>
+        `;
     }
 }
