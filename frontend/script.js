@@ -10,14 +10,23 @@ async function analyzeToken() {
     result.innerHTML = "Analyzing...";
 
     try {
-        const response = await fetch("http://localhost:5000/api/status");
+        const response = await fetch("http://localhost:5000/api/analyze", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ token })
+        });
+
         const data = await response.json();
 
         result.innerHTML = `
-            <p>Backend Connected ✔</p>
-            <p>${data.message}</p>
+            <h3>Risk Score: ${data.riskScore}</h3>
+            <p><strong>Warnings:</strong> ${data.warnings.join(", ")}</p>
+            <pre>${JSON.stringify(data.payload, null, 2)}</pre>
         `;
+
     } catch (error) {
-        result.innerHTML = "Error connecting to backend.";
+        result.innerHTML = "Error analyzing token.";
     }
 }
