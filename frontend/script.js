@@ -22,11 +22,11 @@ async function analyzeToken() {
 
         result.innerHTML = `
             <h3>Risk Score: ${data.riskScore}</h3>
-            <p><strong>Warnings:</strong> ${data.warnings.join(", ")}</p>
+            <p><strong>Warnings:</strong> ${data.warnings?.join(", ") || "None"}</p>
             <pre>${JSON.stringify(data.payload, null, 2)}</pre>
         `;
 
     } catch (error) {
-        result.innerHTML = "Error analyzing token.";
+        result.innerHTML = "Error connecting to backend.";
     }
 }

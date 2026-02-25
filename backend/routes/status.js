@@ -1,6 +1,5 @@
 const express = require("express");
 const jwt = require("jsonwebtoken");
-
 const router = express.Router();
 
 router.get("/status", (req, res) => {
@@ -19,20 +18,17 @@ router.post("/analyze", (req, res) => {
   let warnings = [];
 
   try {
-    // Decode without verifying (for analysis)
     decoded = jwt.decode(token, { complete: true });
 
     if (!decoded) {
-      return res.status(400).json({ error: "Invalid token format" });
+      return res.status(400).json({ error: "Invalid token" });
     }
 
-    // Check Algorithm
     if (decoded.header.alg === "none") {
       riskScore += 40;
       warnings.push("Algorithm 'none' is insecure");
     }
 
-    // Check Expiry
     if (decoded.payload.exp) {
       const currentTime = Math.floor(Date.now() / 1000);
       if (currentTime > decoded.payload.exp) {
@@ -41,9 +37,8 @@ router.post("/analyze", (req, res) => {
       }
     }
 
-    // Basic Risk Rules
     if (riskScore === 0) {
-      riskScore = 10; // default minimal risk
+      riskScore = 10;
     }
 
   } catch (err) {
@@ -53,7 +48,6 @@ router.post("/analyze", (req, res) => {
   res.json({
     riskScore,
     warnings,
-    header: decoded.header,
     payload: decoded.payload
   });
 });
